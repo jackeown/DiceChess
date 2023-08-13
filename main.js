@@ -13,6 +13,12 @@ function checkConnectCode(){
     }
 }
 
+function copyGameLink(){
+         // Copy the text inside the text field
+        navigator.clipboard.writeText(`https://jackeown.github.io/DiceChess/#${peer.id}`);
+}
+
+
 function boardStatus(status){
     let chessBoard = document.getElementById("chessBoard");
     chessBoard.classList.remove("active");
