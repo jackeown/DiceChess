@@ -162,5 +162,14 @@ document.body.onload = function () {
     // Set Connect code in the DOM.
     setTimeout(function(){
         document.getElementById('connectCode').innerHTML = peer.id;
-    },3000);
+    },2000);
+
+    setTimeout(function(){
+        // If there's a hash in the url, use it to connect to the peer.
+        if (window.location.hash.length > 1){
+            connectToPeer(window.location.hash.slice(1));
+        }
+    }, 4000);
+
+
 };
