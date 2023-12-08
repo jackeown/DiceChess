@@ -222,7 +222,7 @@ function legitPawnMove(source, target, piece, newPos, oldPos){
     let capturedPiece = oldPos[target];
     let enemyPieceThere = (capturedPiece !== undefined) && (capturedPiece[0] != piece[0])
     let isDiagonalOne = ((yDistSigned(source, target) == 1 && piece[0] == 'w')  || 
-                         (yDistSigned(source, target) == -1 && piece[0] == 'b') ||) && xDist(source, target) == 1;
+                         (yDistSigned(source, target) == -1 && piece[0] == 'b') ) && xDist(source, target) == 1;
 
 
     let isCapture = enemyPieceThere && isDiagonalOne && target[1] != '1' && target[1] != '8'; // promotions are handled separately
