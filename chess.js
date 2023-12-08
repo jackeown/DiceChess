@@ -18,12 +18,13 @@ function onDrop (source, target, piece, newPos, oldPos, orientation) {
     console.log('Orientation: ' + orientation)
     console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
 
-    if(target == "offboard" || source == target){
-        return false;
-    }
 
-    if(!isLegalMove(source, target, piece, newPos, oldPos, orientation)){
+
+    if(!isLegalMove(source, target, piece, newPos, oldPos, orientation) || target == "offboard" || source == target){
+    
         console.log(`Illegal move moving ${piece} from ${source} to ${target}`)
+        board.position(oldPos);
+
         return false;
     }
 
