@@ -205,7 +205,7 @@ function legitQueenMove(source, target, piece, newPos, oldPos){
 function legitKnightMove(source, target, piece, newPos, oldPos){
     let dx = xDist(source, target);
     let dy = yDist(source, target);
-    let rightPath = (piece[1] == 'N') && (dx == 2 && dy == 1) || (dx == 1 && dy == 2);
+    let rightPath = (piece[1] == 'N') && ((dx == 2 && dy == 1) || (dx == 1 && dy == 2));
     return rightPath && (oldPos[target] == undefined || oldPos[target][0] != piece[0]);
 }
 
@@ -232,7 +232,7 @@ function legitPawnMove(source, target, piece, newPos, oldPos){
     // TODO
 
     // Promotion (including via capture):
-    let forwardOne = ((yDistSigned(source, target) == 1 && piece[0] == 'w') || (yDistSigned(source, target) == -1 && piece[0] == 'b')) && (oldPos[target] == undefined);
+    let isForwardOne = ((yDistSigned(source, target) == 1 && piece[0] == 'w') || (yDistSigned(source, target) == -1 && piece[0] == 'b')) && (oldPos[target] == undefined);
     let targetOccupied = (oldPos[target] !== undefined);
     let targetOccupiedByEnemy = targetOccupied && (oldPos[target][0] != piece[0]);
     
@@ -241,7 +241,7 @@ function legitPawnMove(source, target, piece, newPos, oldPos){
                               (newPos[target][1] == 'N' || newPos[target][1] == 'B' || newPos[target][1] == 'R' || newPos[target][1] == 'Q');
 
     let isPromotion = knightBishRookQueen && 
-                      ((forwardOne && !targetOccupied) ||
+                      ((isForwardOne && !targetOccupied) ||
                        (isDiagonalOne && targetOccupiedByEnemy));
 
     return (piece[1] == 'P') && (isNormalPawnMove || isDoublePawnMove || isCapture || isEnPassant || isPromotion);
