@@ -23,7 +23,7 @@ function onDrop (source, target, piece, newPos, oldPos, orientation) {
     if(!isLegalMove(source, target, piece, newPos, oldPos, orientation) || target == "offboard" || source == target){
     
         console.log(`Illegal move moving ${piece} from ${source} to ${target}`)
-        board.position(oldPos);
+        setTimeout(() => board.position(window.position), 500); // reset board.position(oldPos);
 
         return false;
     }
@@ -272,6 +272,8 @@ function isLegalMove(source, target, piece, newPos, oldPos, orientation){
 
     // Is the right player moving?
     if ((orientation == 'black' && piece[0] == 'w') || (orientation == 'white' && piece[0] == 'b')){
+        let otherOrientation = orientation == 'black' ? 'white' : 'black';
+        console.log(`It's not ${otherOrientation}'s turn.`);
         return false;
     }
 
