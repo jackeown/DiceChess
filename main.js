@@ -1,6 +1,13 @@
-function updateToMove(player){
+function updateToMove(player, roll, required){
     window.whoseMove = player;
-    document.getElementById('toMove').innerHTML = `${player}'s turn to move`;
+
+    if (roll === undefined || required === undefined){
+        document.getElementById('toMove').innerHTML = `${player}'s turn to move`;
+    }
+    else{
+        document.getElementById('toMove').innerHTML = `${player} needed a ${required} and rolled a ${roll}. ${player}'s turn to move`;
+    }
+
 }
 
 function checkConnectCode(){
@@ -64,11 +71,10 @@ function requiredRoll(opponentsRoll){
 }
 
 function processRoll(roll, opponentsTurn){
-    let pronoun = opponentsTurn ? "They" : "You";
     let opponentColor = board.orientation() == 'white' ? 'black' : 'white';
     let color = opponentsTurn ? opponentColor : board.orientation();
     
-    updateToMove(`${pronoun} needed a ${requiredRoll(opponentsTurn)} and rolled a ${roll}. ${color}`);
+    updateToMove(color, roll, requiredRoll(opponentsTurn));
     if (opponentsTurn && roll == requiredRoll(opponentsTurn)){
         boardStatus("bad");
     }
