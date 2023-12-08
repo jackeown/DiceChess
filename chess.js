@@ -18,6 +18,11 @@ function onDrop (source, target, piece, newPos, oldPos, orientation) {
     console.log('Orientation: ' + orientation)
     console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
 
+    // If it's a pawn move to the 1st or 8th rank, prompt for promotion.
+    // piece will remain a pawn, but newPos[target] will be the new piece.
+    if (piece[1] == 'P' && (target[1] == '1' || target[1] == '8')){
+        newPos[target] = promptForPromotion(piece);
+    }
 
 
     if(!isLegalMove(source, target, piece, newPos, oldPos, orientation) || target == "offboard" || source == target || window.whoseMove != board.orientation()){
@@ -43,6 +48,20 @@ function onDrop (source, target, piece, newPos, oldPos, orientation) {
     window.position = newPos;
     sendPosition(window.conn, newPos);
 }
+
+
+
+// UI Stuff ////////////////////////////////////////////////////
+function promptForPromotion(piece){
+    let newPiece = 'P';
+    while (!['Q', 'R', 'B', 'N'].includes(newPiece.toUpperCase())){
+        newPiece = window.prompt(`Promote to which piece? Enter Q, R, B, or N.`, 'Q');
+    }
+    return piece[0] + newPiece.toUpperCase();
+}
+
+
+
 ////////////////////////////////////////////////////////////////
 
 
