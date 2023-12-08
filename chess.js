@@ -46,6 +46,7 @@ function onDrop (source, target, piece, newPos, oldPos, orientation) {
 
     boardStatus("active");
     window.position = newPos;
+    board.position(newPos); // needed for promotions
     sendPosition(window.conn, newPos);
 }
 
