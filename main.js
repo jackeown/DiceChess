@@ -1,4 +1,5 @@
 function updateToMove(player){
+    window.whoseMove = player;
     document.getElementById('toMove').innerHTML = `${player}'s turn to move`;
 }
 
@@ -99,6 +100,7 @@ function recvData(data){
     console.log('Received', data);
     if (data.type == 'position'){
         board.position(data.value);
+        window.position = data.value;
         if(chessBoard.classList.contains("active")){ // if opponent only has one move or is on its second.
             updateToMove(board.orientation());
             boardStatus("active");
