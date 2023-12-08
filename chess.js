@@ -271,10 +271,46 @@ function isLegalMove(source, target, piece, newPos, oldPos, orientation){
         return false;
     }
 
-    return legitPawnMove(source, target, piece, newPos, oldPos) ||
-           legitKnightMove(source, target, piece, newPos, oldPos) ||
-           legitBishMove(source, target, piece, newPos, oldPos) ||
-           legitRookMove(source, target, piece, newPos, oldPos) ||
-           legitQueenMove(source, target, piece, newPos, oldPos) ||
-           legitKingMove(source, target, piece, newPos, oldPos);
+
+    // For debugging:
+    console.log(`isLegalMove(${source}, ${target}, ${piece}, ${newPos}, ${oldPos}, ${orientation}):`);
+
+    if(legitPawnMove(source, target, piece, newPos, oldPos)){
+        console.log(`legit pawn move from ${source} to ${target}`);
+        return true;
+    }
+    else if(legitKnightMove(source, target, piece, newPos, oldPos)){
+        console.log(`legit knight move from ${source} to ${target}`);
+        return true;
+    }
+    else if(legitBishMove(source, target, piece, newPos, oldPos)){
+        console.log(`legit bishop move from ${source} to ${target}`);
+        return true;
+    }
+    else if(legitRookMove(source, target, piece, newPos, oldPos)){
+        console.log(`legit rook move from ${source} to ${target}`);
+        return true;
+    }
+    else if(legitQueenMove(source, target, piece, newPos, oldPos)){
+        console.log(`legit queen move from ${source} to ${target}`);
+        return true;
+    }
+    else if(legitKingMove(source, target, piece, newPos, oldPos)){
+        console.log(`legit king move from ${source} to ${target}`);
+        return true;
+    }
+    else{
+        console.log(`illegal move from ${source} to ${target}`);
+        return false;
+    }
+
+
+
+
+    // return legitPawnMove(source, target, piece, newPos, oldPos) ||
+    //        legitKnightMove(source, target, piece, newPos, oldPos) ||
+    //        legitBishMove(source, target, piece, newPos, oldPos) ||
+    //        legitRookMove(source, target, piece, newPos, oldPos) ||
+    //        legitQueenMove(source, target, piece, newPos, oldPos) ||
+    //        legitKingMove(source, target, piece, newPos, oldPos);
 }
