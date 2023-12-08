@@ -8,12 +8,20 @@
 </head>
 <body>
 
+    <br><br>
     <div id="rules">
+        <h1>Dice Chess Rules</h1>
         Rules are the same as regular chess, except for the following:
 
         <ol>
             <li>Each player rolls 2 six-sided dice at the beginning of their turn and the values are added together.</li>
-            <li>If the player who is down material rolls a 7, they get to make two moves in a row!</li>
+            <li>If the player who is down material rolls a 7, they get to make two moves in a row!
+                <ul>
+                    <li>On your first move of two, the board will <span style="text-shadow: 0px 0px 4px green;">glow green</span> to indicate you have two moves.</li>
+                    <li>On your opponents first move of two, the board will <span style="text-shadow: 0px 0px 4px red;">glow red</span> to indicate your opponent has two moves.</li>
+                </ul>
+
+            </li>
             <li>If the player who is up $k$ points of material, rolls a (7+k), then they get to make two moves in a row!</li>
         </ol>
     </div>
@@ -26,11 +34,19 @@
             margin: auto;
             max-width:600px;
             text-align: center;
+            background-color: rgba(200,200,255,0.5);
+            box-shadow:5px 5px 5px 2px black, -5px -5px 5px 2px linear-gradient(white, black);
+            /* box-shadow:5px 5px 0px -5px red; */
+            padding:1em;
         }
 
         #rules ol {
             text-align: left;
             line-height: 1.5em;
+        }
+
+        body{
+            background:rgb(59, 98, 143);
         }
 
     </style>
