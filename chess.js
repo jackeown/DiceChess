@@ -216,7 +216,9 @@ function legitPawnMove(source, target, piece, newPos, oldPos){
     let isNormalPawnMove = (xDistSigned(source, target) == 0) && (yDistSigned(source, target) == 1) && (oldPos[target] == undefined);
 
     // Double move from rank 2 to rank 4:
-    let isDoublePawnMove = (source[1] == 2) && (target[1] == 4) && (oldPos[`${target[0]}3`] == undefined) && (oldPos[`${target[0]}4`] == undefined);
+    let isDoublePawnMoveWhite = (source[1] == 2) && (target[1] == 4) && (oldPos[`${target[0]}3`] == undefined) && (oldPos[`${target[0]}4`] == undefined);
+    let isDoublePawnMoveBlack = (source[1] == 7) && (target[1] == 5) && (oldPos[`${target[0]}6`] == undefined) && (oldPos[`${target[0]}5`] == undefined);
+    let isDoublePawnMove = isDoublePawnMoveWhite || isDoublePawnMoveBlack;
 
     // Capturing a piece:
     let capturedPiece = oldPos[target];
