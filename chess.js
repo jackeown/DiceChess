@@ -232,7 +232,8 @@ function legitKnightMove(source, target, piece, newPos, oldPos){
 function legitPawnMove(source, target, piece, newPos, oldPos){
     
     // Normal move one forward:
-    let isNormalPawnMove = (xDistSigned(source, target) == 0) && (yDistSigned(source, target) == 1) && (oldPos[target] == undefined);
+    let isForwardOne = ((yDistSigned(source, target) == 1 && piece[0] == 'w') || (yDistSigned(source, target) == -1 && piece[0] == 'b')) && xDist(source, target) == 0;
+    let isNormalPawnMove = isForwardOne && (oldPos[target] == undefined);
 
     // Double move from rank 2 to rank 4:
     let isDoublePawnMoveWhite = (source[1] == 2) && (target[1] == 4) && (oldPos[`${target[0]}3`] == undefined) && (oldPos[`${target[0]}4`] == undefined);
@@ -253,7 +254,6 @@ function legitPawnMove(source, target, piece, newPos, oldPos){
     // TODO
 
     // Promotion (including via capture):
-    let isForwardOne = ((yDistSigned(source, target) == 1 && piece[0] == 'w') || (yDistSigned(source, target) == -1 && piece[0] == 'b')) && (oldPos[target] == undefined);
     let targetOccupied = (oldPos[target] !== undefined);
     let targetOccupiedByEnemy = targetOccupied && (oldPos[target][0] != piece[0]);
     
@@ -274,8 +274,6 @@ function legitKingMove(source, target, piece, newPos, oldPos){
     let notOccupiedBySelf = (oldPos[target] == undefined) ||
                             ((oldPos[target][0] != piece[0]) && // can't capture a piece of the same color
                              (oldPos[target][1] != 'K')); // can't capture a king
-
-
 
     let isNormalKingMove = (xDistSigned(source, target) <= 1) && 
                            (yDistSigned(source, target) <= 1) && 
