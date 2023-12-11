@@ -148,7 +148,7 @@ function processConnection(conn){
     // 1.) window.position holds the current location of all pieces
     window.position = board.position();
     // 2.) window.enPassant holds any legal en passant moves
-    window.enPassant = [];
+    window.enPassant = null;
     // 3.) window.castleEligibility maps each king and rook to a boolean for whether they can castle.
     window.castleEligibility = {
         'wK': true,

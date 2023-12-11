@@ -251,9 +251,16 @@ function legitPawnMove(source, target, piece, newPos, oldPos){
 
     let isCapture = enemyPieceThere && isDiagonalOne && target[1] != '1' && target[1] != '8'; // promotions are handled separately
  
-    // En passant:
+    // En passant (window.enPassant is null or the target of an available en passant move):
     let isEnPassant = false;
-    // TODO
+    if (window.enPassant !== null && target == window.enPassant && isDiagonalOne){
+        isEnPassant = true;
+        let signedOne = (piece[0] == 'w') ? -1 : 1;
+        let pieceToRemove = `${target[0]}${String.fromCharCode(target.charCodeAt(1) + signedOne)}`;
+        delete newPos[pieceToRemove];
+    }
+    
+
 
     // Promotion (including via capture):
     let targetOccupied = (oldPos[target] !== undefined);
