@@ -35,7 +35,8 @@ header input {
 }
 
 #chessBoard {
-    max-width: min(700px, 95%);
+    max-width: min(800px, 95%);
+    max-height: min(800px, 95%);
     margin: auto;
 }
 
