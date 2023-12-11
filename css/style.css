@@ -47,7 +47,7 @@ h2 {
 
 /* Dice Styles */
 
-* {
+.dice * {
     margin: 0;
     padding: 0;
     vertical-align: baseline;
@@ -63,6 +63,10 @@ h2 {
     justify-items: center;
     padding: 2rem;
     perspective: 600px;
+
+    max-width:400px;
+    margin: auto;
+
 }
 
 .die-list {
