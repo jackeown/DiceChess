@@ -13,6 +13,9 @@ header {
 
 #chessBoard {
     transition: 3s all;
+    max-width: min(300px, 95%);
+    max-height: min(300px, 95%);
+    margin: auto;
 }
 
 #chessBoard.active {
@@ -32,12 +35,6 @@ header {
 
 header input {
     width: 20em;
-}
-
-#chessBoard {
-    max-width: min(800px, 95%);
-    max-height: min(800px, 95%);
-    margin: auto;
 }
 
 h2 {
