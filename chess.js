@@ -49,6 +49,8 @@ function onDrop (source, target, piece, newPos, oldPos, orientation) {
     window.position = newPos;
     board.position(newPos); // needed for promotions
     sendPosition(window.conn, newPos);
+    window.enPassant = null;
+
 }
 
 
@@ -85,18 +87,26 @@ function yDist(source, target){
 }
 
 
-////////////////////////////////////////////////////////////////
-//            CHESS LOGIC FUNCTIONS HERE                      //
-// legitXMove functions only check that there are no          //
-// pieces in the way and that that type of movement is        // 
-// generally legal for the piece type.                        //
-//                                                            //
-// isLegalMove() considers moving into and out of check stuff //
-// and whose turn it is is checked in onDragStart()           //
-// Consequently, all the legitXMove functions consider both   //
-// white and black moves at all times assuming the turn from  //
-// the piece.                                                 //
-////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+//                                                               //
+//            CHESS LOGIC FUNCTIONS HERE                         //
+//                                                               //
+// legitXMove functions only check that there are no             //
+// pieces in the way and that that type of movement is           // 
+// generally legal for the piece type.                           //
+//                                                               //
+// isLegalMove() considers moving into and out of check stuff    //
+// and whose turn it is is checked in onDragStart()              //
+// Consequently, all the legitXMove functions consider both      //
+// white and black moves at all times assuming the turn from     //
+// the piece.                                                    //
+//                                                               //
+// Note: isLegitPawnMove(), isLegitKingMove()                    //
+//     and isLegitRookMove() all have side effects regarding     //
+//     castling and en passant. If the move is legal,            //
+//     then the global castling and en passant flags are updated //
+//                                                               //
+///////////////////////////////////////////////////////////////////
 
 // Helper functions:
 
@@ -242,6 +252,11 @@ function legitPawnMove(source, target, piece, newPos, oldPos){
     let isDoublePawnMoveBlack = (source[1] == 7) && (target[1] == 5) && (oldPos[`${target[0]}6`] == undefined) && (oldPos[`${target[0]}5`] == undefined);
     let isDoublePawnMove = isDoublePawnMoveWhite || isDoublePawnMoveBlack;
 
+    if (isDoublePawnMove){
+        let signedOne = (piece[0] == 'w') ? -1 : 1;
+        window.enPassant = `${target[0]}${String.fromCharCode(target.charCodeAt(1) + signedOne)}`;
+    }
+
     // Capturing a piece:
     let capturedPiece = oldPos[target];
     let enemyPieceThere = (capturedPiece !== undefined) && (capturedPiece[0] != piece[0])
@@ -259,8 +274,6 @@ function legitPawnMove(source, target, piece, newPos, oldPos){
         let pieceToRemove = `${target[0]}${String.fromCharCode(target.charCodeAt(1) + signedOne)}`;
         delete newPos[pieceToRemove];
     }
-    
-
 
     // Promotion (including via capture):
     let targetOccupied = (oldPos[target] !== undefined);
