@@ -95,6 +95,7 @@ function rollDice(){
 
     // Trigger Animation CSS
     // TODO
+    rollDiceGUI(roll,roll2);
 
 
     processRoll(total, 0);

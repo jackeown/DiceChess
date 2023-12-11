@@ -133,12 +133,13 @@
 
 
         // Dice JS (from an online thing):
-        function rollDice() {
-            const dice = [...document.querySelectorAll(".die-list")];
-            dice.forEach(die => {
-                toggleClasses(die);
-                die.dataset.roll = getRandomNumber(1, 6);
-            });
+        function rollDiceGUI(roll1, roll2) {
+            const [die1, die2] = document.querySelectorAll(".die-list");
+            toggleClasses(die1);
+            die1.dataset.roll = roll1;
+
+            toggleClasses(die2);
+            die2.dataset.roll = roll2;
         }
 
         function toggleClasses(die) {
