@@ -30,6 +30,83 @@
     </main>
 
     <h2 id="toMove">(You must connect with an opponent first)</h2>
+    <div class="dice">
+        <ol class="die-list even-roll" data-roll="1" id="die-1">
+
+            <!-- First Die -->
+            <li class="die-item" data-side="1">
+              <span class="dot"></span>
+            </li>
+            <li class="die-item" data-side="2">
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </li>
+            <li class="die-item" data-side="3">
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </li>
+            <li class="die-item" data-side="4">
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </li>
+            <li class="die-item" data-side="5">
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </li>
+            <li class="die-item" data-side="6">
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </li>
+          </ol>
+
+          <!-- Second Die -->
+          <ol class="die-list even-roll" data-roll="1" id="die-1">
+            <li class="die-item" data-side="1">
+              <span class="dot"></span>
+            </li>
+            <li class="die-item" data-side="2">
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </li>
+            <li class="die-item" data-side="3">
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </li>
+            <li class="die-item" data-side="4">
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </li>
+            <li class="die-item" data-side="5">
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </li>
+            <li class="die-item" data-side="6">
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </li>
+          </ol>
+    </div>
+
 
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"
         integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2"
@@ -49,10 +126,33 @@
             dropOffBoard: 'snapback', // this is the default
             position: 'start',
             onDrop: onDrop,
-            sparePieces: true,
+            // sparePieces: true,
             onDragStart: onDragStart,
         }
-        let board = Chessboard('chessBoard', config)
+        let board = Chessboard('chessBoard', config);
+
+
+        // Dice JS (from an online thing):
+        function rollDice() {
+            const dice = [...document.querySelectorAll(".die-list")];
+            dice.forEach(die => {
+                toggleClasses(die);
+                die.dataset.roll = getRandomNumber(1, 6);
+            });
+        }
+
+        function toggleClasses(die) {
+            die.classList.toggle("odd-roll");
+            die.classList.toggle("even-roll");
+        }
+
+        function getRandomNumber(min, max) {
+            min = Math.ceil(min);
+            max = Math.floor(max);
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+
     </script>
 
 

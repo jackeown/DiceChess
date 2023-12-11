@@ -20,10 +20,11 @@ function onDrop (source, target, piece, newPos, oldPos, orientation) {
 
     // If it's a pawn move to the 1st or 8th rank, prompt for promotion.
     // piece will remain a pawn, but newPos[target] will be the new piece.
-    if (piece[1] == 'P' && (target[1] == '1' || target[1] == '8')){
+    let whitePromotion = piece[1] == 'P' && (source[1] == '7' && target[1] == '8');
+    let blackPromotion = piece[1] == 'P' && (source[1] == '2' && target[1] == '1');
+    if (whitePromotion || blackPromotion) {
         newPos[target] = promptForPromotion(piece);
     }
-
 
     if(!isLegalMove(source, target, piece, newPos, oldPos, orientation) || target == "offboard" || source == target || window.whoseMove != board.orientation()){
     
@@ -329,13 +330,4 @@ function isLegalMove(source, target, piece, newPos, oldPos, orientation){
         return false;
     }
 
-
-
-
-    // return legitPawnMove(source, target, piece, newPos, oldPos) ||
-    //        legitKnightMove(source, target, piece, newPos, oldPos) ||
-    //        legitBishMove(source, target, piece, newPos, oldPos) ||
-    //        legitRookMove(source, target, piece, newPos, oldPos) ||
-    //        legitQueenMove(source, target, piece, newPos, oldPos) ||
-    //        legitKingMove(source, target, piece, newPos, oldPos);
 }
