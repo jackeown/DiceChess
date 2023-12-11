@@ -19,7 +19,7 @@ header {
     padding:auto;
 }
 
-#chessBoard > * {
+#chessBoard > * > * {
     margin: auto;
 }
 
