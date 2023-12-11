@@ -13,8 +13,8 @@ header {
 
 #chessBoard {
     transition: 3s all;
-    max-width: min(300px, 95%);
-    max-height: min(300px, 95%);
+    max-width: min(600px, 90%);
+    max-height: min(600px, 90%);
     margin: auto;
 }
 
