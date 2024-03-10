@@ -22,8 +22,10 @@ function onDrop (source, target, piece, newPos, oldPos, orientation) {
     // piece will remain a pawn, but newPos[target] will be the new piece.
     let whitePromotion = piece[1] == 'P' && (source[1] == '7' && target[1] == '8');
     let blackPromotion = piece[1] == 'P' && (source[1] == '2' && target[1] == '1');
+    let promotionPiece = undefined;
     if (whitePromotion || blackPromotion) {
-        newPos[target] = promptForPromotion(piece);
+        promotionPiece = promptForPromotion(piece);
+        newPos[target] = promotionPiece;
     }
 
     if(!includesMove(state.legalMoves(), [source,target]) || target == "offboard" || source == target || state.whoseTurn.toUpperCase() != board.orientation().toUpperCase()){
@@ -45,10 +47,13 @@ function onDrop (source, target, piece, newPos, oldPos, orientation) {
 
     boardStatus("active");
     window.position = newPos;
-    state.makeMove([source,target]);
-    board.position(state.position); // needed for promotions
+    state.makeMove([source,target], promotionPiece);
+    // board.position(state.position); // needed for promotions
+    setTimeout(() => board.position(state.position), 10);
+
+
     // sendPosition(window.conn, newPos);
-    sendMove(window.conn, [source, target]);
+    sendMove(window.conn, [source, target], promotionPiece);
     window.enPassant = null;
 }
 
@@ -102,10 +107,11 @@ function sendPosition(conn, position){
     });
 }
 
-function sendMove(conn, move){
+function sendMove(conn, move, promotionPiece){
     conn.send({
         type: 'move',
-        value: move
+        value: move,
+        promotionPiece: promotionPiece
     });
 }
 
@@ -200,7 +206,7 @@ function recvData(data){
 
     console.log('Received', data);
     if (data.type == 'move'){
-        state.makeMove(data.value);
+        state.makeMove(data.value, data.promotionPiece);
         board.position(state.position);
         if (chessBoard.classList.contains("active")) {
             boardStatus("active");

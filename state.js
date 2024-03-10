@@ -81,7 +81,8 @@ class DiceChessState {
     }
 
     // Doesn't check for legality at all, but actually makes the move
-    makeMove(move){
+    makeMove(move, promotionPiece){
+        console.log(`Moving piece '${this.position[move[0]]}' from ${move[0]} to ${move[1]}: (promotion piece: ${promotionPiece})`);
         // TODO: Make the special case for promoting...
         
         if (this.position[move[0]] === undefined){
@@ -114,6 +115,7 @@ class DiceChessState {
             delete this.position[squareToDelete];
         }
 
+
         // If it's a two-square pawn move, set enPassant:
         this.enPassant = null;
         if (isPawnMove && Math.abs(rank(move[0]) - rank(move[1])) == 2){
@@ -124,11 +126,30 @@ class DiceChessState {
         // board.position(state.position)
         this.position = JSON.parse(JSON.stringify(this.position))
 
-        // TODO:Update castling elligibility:
+        // Updating castling eligibility
+        if (isKingMove){
+            this.castleEligibility[`${this.whoseTurn[0]}K`] = false;
+        }
+        for(let rank of [1,8]){
+            for (let file of ['a','h']){
+                let color = rank == 1 ? 'W' : 'B';
+                let moveStartsOnRookHome = (move[0] == `${file}${rank}`);
+                if (moveStartsOnRookHome){
+                    this.castleEligibility[`${color}R${file}`] = false;
+                }
+            }
+        }
+        
 
         let [from, to] = move;
         this.position[to] = this.position[from];
         delete this.position[from];
+
+        // If it's a pawn move, check for promotion and update piece type
+        if (isPawnMove && rank(move[1]) == 1 || rank(move[1]) == 8){
+            this.position[to] = promotionPiece;
+        }
+
 
         if (this.anotherTurn){
             this.anotherTurn = false;
@@ -137,6 +158,7 @@ class DiceChessState {
             this.whoseTurn = (this.whoseTurn == "White") ? "Black" : "White";
         }
 
+        
 
 
     }
@@ -348,9 +370,9 @@ class DiceChessState {
         let newBoard = this.clone();
         
         newBoard.anotherTurn = false;
-        console.log("New board before move", move, JSON.stringify(newBoard.position), newBoard.whoseTurn, newBoard.anotherTurn);
+        // console.log("New board before move", move, JSON.stringify(newBoard.position), newBoard.whoseTurn, newBoard.anotherTurn);
         newBoard.makeMove(move);
-        console.log("New board", JSON.stringify(newBoard.position), newBoard.whoseTurn, newBoard.anotherTurn);
+        // console.log("New board", JSON.stringify(newBoard.position), newBoard.whoseTurn, newBoard.anotherTurn);
 
         newBoard.whoseTurn = (newBoard.whoseTurn == "White") ? "Black" : "White";
 

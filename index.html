@@ -139,6 +139,10 @@
         let state = new DiceChessState();
         state.initGame(board);
 
+        jQuery('#chessBoard').on('scroll touchmove touchend touchstart contextmenu', function(e){
+          e.preventDefault();
+        });
+
 
         function gameEndChecker(){
           if (state.checkmate()){
@@ -153,7 +157,7 @@
           }
         }
 
-        gameEndChecker()
+        // gameEndChecker()
 
 
 
