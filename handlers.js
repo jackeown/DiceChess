@@ -1,5 +1,67 @@
+function onDragStart (source, piece, position, orientation) {
+    if (!window.conn){
+        return false;
+    }
+    if ((orientation === 'white' && piece.search(/^w/) === -1) ||
+        (orientation === 'black' && piece.search(/^b/) === -1)) {
+      return false
+    }
+}
+
+
+function onDrop (source, target, piece, newPos, oldPos, orientation) {
+    console.log('Source: ' + source)
+    console.log('Target: ' + target)
+    console.log('Piece: ' + piece)
+    console.log('New position: ' + Chessboard.objToFen(newPos))
+    console.log('Old position: ' + Chessboard.objToFen(oldPos))
+    console.log('Orientation: ' + orientation)
+    console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+
+    // If it's a pawn move to the 1st or 8th rank, prompt for promotion.
+    // piece will remain a pawn, but newPos[target] will be the new piece.
+    let whitePromotion = piece[1] == 'P' && (source[1] == '7' && target[1] == '8');
+    let blackPromotion = piece[1] == 'P' && (source[1] == '2' && target[1] == '1');
+    if (whitePromotion || blackPromotion) {
+        newPos[target] = promptForPromotion(piece);
+    }
+
+    if(!includesMove(state.legalMoves(), [source,target]) || target == "offboard" || source == target || state.whoseTurn.toUpperCase() != board.orientation().toUpperCase()){
+        console.log(`Illegal move moving ${piece} from ${source} to ${target}`)
+        setTimeout(() => board.position(oldPos), 10); // hacky
+        return false;
+    }
+
+    let chessBoard = document.getElementById("chessBoard");
+    
+    // Switch whose turn it is if the person is doing their second move or if the opponent only has one move.
+    if (chessBoard.classList.contains("active")){
+        updateToMove(board.orientation() == 'white' ? 'black' : 'white');
+    }
+    // otherwise they are doing their first move and we don't need to switch.
+    else{
+        updateToMove(board.orientation());
+    }
+
+    boardStatus("active");
+    window.position = newPos;
+    state.makeMove([source,target]);
+    board.position(state.position); // needed for promotions
+    // sendPosition(window.conn, newPos);
+    sendMove(window.conn, [source, target]);
+    window.enPassant = null;
+}
+
+
+
+
+
+
+
+
 function updateToMove(player, roll, required){
-    window.whoseMove = player;
+    // window.whoseMove = player;
+    // state.whoseTurn = player;
 
     if (roll === undefined || required === undefined){
         document.getElementById('toMove').innerHTML = `${player}'s turn to move`;
@@ -7,7 +69,6 @@ function updateToMove(player, roll, required){
     else{
         document.getElementById('toMove').innerHTML = `${player} needed a ${required} and rolled a ${roll}. ${player}'s turn to move`;
     }
-
 }
 
 function checkConnectCode(){
@@ -41,6 +102,13 @@ function sendPosition(conn, position){
     });
 }
 
+function sendMove(conn, move){
+    conn.send({
+        type: 'move',
+        value: move
+    });
+}
+
 function advantage(){
     let material = 0;
 
@@ -71,15 +139,21 @@ function requiredRoll(opponentsRoll){
 }
 
 function processRoll(roll, opponentsTurn){
+    rollDiceGUI(roll[0],roll[1]);
+    roll = roll[0] + roll[1];
+
     let opponentColor = board.orientation() == 'white' ? 'black' : 'white';
     let color = opponentsTurn ? opponentColor : board.orientation();
     
     updateToMove(color, roll, requiredRoll(opponentsTurn));
-    if (opponentsTurn && roll == requiredRoll(opponentsTurn)){
-        boardStatus("bad");
-    }
-    if (!opponentsTurn && roll == requiredRoll(opponentsTurn)){
-        boardStatus("good");
+    if (requiredRoll(opponentsTurn) == roll){
+        state.anotherTurn = true;
+        if (opponentsTurn){
+            boardStatus("bad");
+        }
+        if (!opponentsTurn){
+            boardStatus("good");
+        }
     }
 }
 
@@ -87,41 +161,19 @@ function rollDice(){
     // Roll 2 dice and send the result to the opponent.
     let roll = Math.floor(Math.random() * 6) + 1;
     let roll2 = Math.floor(Math.random() * 6) + 1;
-    let total = roll + roll2;
+
+    // let roll = Math.floor(Math.random() * 6)+1;
+    // let roll2 = requiredRoll(false) - roll;
+
     window.conn.send({
         type: 'roll',
-        value: total
+        value: [roll,roll2]
     });
 
-    // Trigger Animation CSS
-    // TODO
-    rollDiceGUI(roll,roll2);
-
-
-    processRoll(total, 0);
+    // rollDiceGUI(roll,roll2);
+    processRoll([roll,roll2], 0);
 }
 
-function recvData(data){
-    let chessBoard = document.getElementById("chessBoard");
-
-    console.log('Received', data);
-    if (data.type == 'position'){
-        board.position(data.value);
-        window.position = data.value;
-        if(chessBoard.classList.contains("active")){ // if opponent only has one move or is on its second.
-            updateToMove(board.orientation());
-            boardStatus("active");
-            rollDice();
-        }
-        else if(chessBoard.classList.contains("bad")){ // The first move of two.
-            boardStatus("active");
-            updateToMove(board.orientation() == 'white' ? 'black' : 'white');
-        }
-    }
-    else if(data.type == 'roll'){
-        processRoll(data.value, 1);
-    }
-}
 
 function initializeOrientation(){
     if (peer.id < window.conn.peer){
@@ -131,6 +183,41 @@ function initializeOrientation(){
         board.orientation('black');
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+function recvData(data){
+    let chessBoard = document.getElementById("chessBoard");
+
+    console.log('Received', data);
+    if (data.type == 'move'){
+        state.makeMove(data.value);
+        board.position(state.position);
+        if (chessBoard.classList.contains("active")) {
+            boardStatus("active");
+            updateToMove(board.orientation() == 'white' ? 'black' : 'white');
+            rollDice();
+        }
+        else if (chessBoard.classList.contains("bad")) {
+            boardStatus("active");
+            updateToMove(board.orientation() == 'white' ? 'black' : 'white');
+        }
+    }
+    else if(data.type == 'roll'){
+        processRoll(data.value, 1);
+    }
+}
+
+
 
 function processConnection(conn){
     if (conn){
@@ -142,30 +229,11 @@ function processConnection(conn){
     document.getElementById('opponentCode').value = window.conn.peer;
     document.getElementById('connect').disabled = true;
     initializeOrientation();
-
-
-    // Setup global game state:
-    // 1.) window.position holds the current location of all pieces
-    window.position = board.position();
-    // 2.) window.enPassant holds any legal en passant moves
-    window.enPassant = null;
-    // 3.) window.castleEligibility maps each king and rook to a boolean for whether they can castle.
-    window.castleEligibility = {
-        'wK': true,
-        'bK': true,
-        'wRa': true, // a file rooks
-        'bRa': true,
-        'wRh': true, // h file rooks
-        'bRh': true
-    }
-
-    // Add white glow to the board.
-    // This is also the sketchy way I'm tracking whether someone has two moves.
-    // White/active means you or your opponent are on the only move or second move of the persons turn.
-    // Green/good means you have two moves and you're on your first.
-    // Red/bad means your opponent has two moves, and they're on their first.
     document.getElementById('chessBoard').classList.add("active")
 }
+
+
+
 
 function connectToPeer(id){
     if (!id)
@@ -177,19 +245,6 @@ function connectToPeer(id){
     window.conn = conn;
     return conn;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

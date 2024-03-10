@@ -108,6 +108,7 @@
     </div>
 
 
+    <!-- Jquery, Chessboard, and PeerJS imports -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"
         integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2"
         crossorigin="anonymous"></script>
@@ -117,27 +118,52 @@
         crossorigin="anonymous"></script>
 
     <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
-    <script src="main.js"></script>
+    
+    <!-- My Javascript -->
+    <script src="chessHelpers.js"></script>
+    <script src="state.js"></script>
+    <script src="handlers.js"></script>
 
-    <script src="chess.js"></script>
+
+    <!-- Create the chessboard -->
     <script>
-        let config = {
+        let board = Chessboard('chessBoard', {
             draggable: true,
             dropOffBoard: 'snapback', // this is the default
             position: 'start',
             onDrop: onDrop,
             // sparePieces: true,
             onDragStart: onDragStart,
+        });
+
+        let state = new DiceChessState();
+        state.initGame(board);
+
+
+        function gameEndChecker(){
+          if (state.checkmate()){
+              alert(`Game Over: ${this.whoseTurn == "White" ? "Black" : "White"} wins!`);
+          }
+          else if (state.stalemate()){
+              alert(`Game Over: Stalemate!`);
+          }
+          else{
+              setTimeout(gameEndChecker, 3000);
+              console.log('Game not over yet');
+          }
         }
-        let board = Chessboard('chessBoard', config);
+
+        gameEndChecker()
 
 
-        // Dice JS (from an online thing):
+
+
+
+
         function rollDiceGUI(roll1, roll2) {
             const [die1, die2] = document.querySelectorAll(".die-list");
             toggleClasses(die1);
             die1.dataset.roll = roll1;
-
             toggleClasses(die2);
             die2.dataset.roll = roll2;
         }
@@ -152,7 +178,6 @@
             max = Math.floor(max);
             return Math.floor(Math.random() * (max - min + 1)) + min;
         }
-
 
     </script>
 
