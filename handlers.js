@@ -221,6 +221,20 @@ function recvData(data){
     else if(data.type == 'roll'){
         processRoll(data.value, 1);
     }
+    else if(data.type == 'takebackProposal'){
+        alert("Your opponent has requested a takeback. Press accept or reject button after closing this popup");
+        document.querySelector('#proposeTakeback').disabled = true;
+        document.querySelector('#acceptTakeback').disabled = false;
+        document.querySelector('#rejectTakeback').disabled = false;
+    }
+    else if(data.type = 'takeback'){
+        if (data.value){
+            state.revertMove();
+        }
+        else{
+            alert("Opponent rejected takeback request");
+        }
+    }
 }
 
 
@@ -270,6 +284,29 @@ document.body.onload = function () {
             connectToPeer(window.location.hash.slice(1));
         }
     }, 4000);
-
-
 };
+
+
+function proposeTakeback(){
+        conn.send({
+            type: 'takebackProposal',
+        });
+}
+
+function acceptTakeback(){
+    conn.send({
+        type: 'takeback',
+        value: true
+    });
+    state.revertMove();
+}
+
+function rejectTakeback(){
+    conn.send({
+        type: 'takeback',
+        value: false
+    });
+    document.querySelector('#proposeTakeback').disabled = true;
+    document.querySelector('#acceptTakeback').disabled = false;
+    document.querySelector('#rejectTakeback').disabled = false;
+}

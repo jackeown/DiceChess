@@ -14,22 +14,28 @@
 </head>
 <body>
     <header>
-        <h1>Dice Chess - <a href="rules.html" target="_blank">Rules</a></h1>
-        <h3>(normal chess rules are not enforced yet so no cheating ;))</h3>
+        <h2>Dice Chess - <a href="rules.html" target="_blank">Rules</a></h2>
         <span>Enter Opponent Connect Code:</span><input type="text" id="opponentCode" oninput="checkConnectCode()">
-        <button id="connect" onclick="connectToPeer()" disabled>Connect</button>
-        <hr>
+        <button id="connect" onclick="connectToPeer()" disabled>Connect</button><br>
         <span>Your Connect Code:</span><span id="connectCode">N/A</span>
         <button id="copyGameLink" onclick="copyGameLink()">Copy Game Link</button>
-    </header><br><br>
+      </header>
+      <hr>
 
 
     <!-- Chess Board and Gameplay stuff -->
     <main>
-        <div id="chessBoard"></div>
+      <div id="controls">
+        <div>
+          <button id="proposeTakeback" disabled onclick="proposeTakeback()">Propose Takeback</button>
+          <button id="acceptTakeback" disabled onclick="acceptTakeback()">Accept Takeback</button>
+          <button id="rejectTakeback" disabled onclick="rejectTakeback()">Reject Takeback</button>
+        </div>
+      </div>
+      <div id="chessBoard"></div>
     </main>
 
-    <h2 id="toMove">(You must connect with an opponent first)</h2>
+    <h3 id="toMove">(You must connect with an opponent first)</h3>
     <div class="dice">
         <ol class="die-list even-roll" data-roll="1" id="die-1">
 
@@ -127,7 +133,7 @@
 
     <!-- Create the chessboard -->
     <script>
-        let board = Chessboard('chessBoard', {
+        window.board = Chessboard('chessBoard', {
             draggable: true,
             dropOffBoard: 'snapback', // this is the default
             position: 'start',
@@ -136,7 +142,7 @@
             onDragStart: onDragStart,
         });
 
-        let state = new DiceChessState();
+        window.state = new DiceChessState();
         state.initGame(board);
 
         jQuery('#chessBoard').on('scroll touchmove touchend touchstart contextmenu', function(e){
@@ -152,14 +158,11 @@
               alert(`Game Over: Stalemate!`);
           }
           else{
-              setTimeout(gameEndChecker, 3000);
-              console.log('Game not over yet');
+              setTimeout(gameEndChecker, 1000);
+              // console.log('Game not over yet');
           }
         }
-
-        // gameEndChecker()
-
-
+        gameEndChecker()
 
 
 

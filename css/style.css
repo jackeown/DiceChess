@@ -2,6 +2,7 @@ body {
     background: rgb(59, 98, 143);
     color: whitesmoke;
     font-family: Roboto;
+    padding:0px 30px;
 }
 
 header {
@@ -11,12 +12,48 @@ header {
 }
 
 
+h2,h4 {
+    margin:10px;
+}
+
+
+#controls{
+    position:absolute;
+    right:3%;
+}
+
+#controls>div{
+    display:flex;
+    flex-direction: column;
+    max-width:250px;
+}
+
+button{
+    padding:8px;
+    border-radius:5px;
+    background:white;
+    border:1px solid black;
+    color:black;
+    font-family: Roboto;
+    font-weight: 400;
+}
+
+button:disabled{
+    background:darkgray;
+    text-decoration: line-through;
+}
+
+#controls>div>button{
+    margin:5px;
+}
+
 #chessBoard {
     transition: 3s all;
-    max-width: min(600px, 90%);
-    max-height: min(600px, 90%);
+    max-width: min(450px, 80%);
+    max-height: min(450px, 80%);
     margin: auto;
     padding:auto;
+    display:block;
 }
 
 #chessBoard > * > * {
@@ -42,10 +79,13 @@ header input {
     width: 20em;
 }
 
-h2 {
-    text-align: center;
-}
 
+
+#toMove {
+    margin-bottom: 0px;
+    margin-top:0px;
+    text-align:center;
+}
 
 
 /* Dice Styles */
@@ -69,7 +109,8 @@ h2 {
 
     max-width:400px;
     margin: auto;
-    transform: scale(0.8);
+    transform: scale(0.5);
+    transform-origin:top;
 }
 
 .die-list {

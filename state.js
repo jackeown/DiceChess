@@ -30,6 +30,14 @@ class DiceChessState {
         this.anotherTurn = false;
         this.enPassant = null;
         this.castleEligibility = null;
+        this.simulated = false;
+        this.gameHistoryStack = [];
+    }
+
+    log(...args){
+        if (!this.simulated){
+            console.log(...args);
+        }
     }
 
     clone(){
@@ -39,7 +47,9 @@ class DiceChessState {
         newState.whoseTurn = this.whoseTurn;
         newState.anotherTurn = this.anotherTurn;
         newState.enPassant = this.enPassant;
-        newState.castleEligibility = this.castleEligibility;
+        newState.castleEligibility = JSON.parse(JSON.stringify(this.castleEligibility)); // deep copy this.castleEligibility;
+        newState.simulated = this.simulated;
+        newState.gameHistoryStack = Array.from(this.gameHistoryStack);
         return newState;
     }
 
@@ -47,6 +57,7 @@ class DiceChessState {
         this.board = board;
         this.position = board.position();
         this.whoseTurn = 'White';
+        this.anotherTurn = false;
         this.enPassant = null;
         this.castleEligibility = {
             'WK': true,
@@ -56,6 +67,19 @@ class DiceChessState {
             'WRh': true, // h file rooks
             'BRh': true
         } // first letters capital because whoseTurn is capitalized: see makeMove
+        this.gameHistoryStack = [];
+    }
+
+    // ASSUMES A GLOBAL window.state VARIABLE IS THE MAIN STATE and board IS THE CHESS BOARD!!!
+    revertMove(numMoves=1){
+        for (let i = 0; i < numMoves; i++){
+            window.state = this.gameHistoryStack.pop();
+        }
+        window.board.position(window.state.position);
+
+        document.querySelector('#proposeTakeback').disabled = false;
+        document.querySelector('#acceptTakeback').disabled = true;
+        document.querySelector('#rejectTakeback').disabled = true;
     }
 
     check(){
@@ -82,11 +106,13 @@ class DiceChessState {
 
     // Doesn't check for legality at all, but actually makes the move
     makeMove(move, promotionPiece){
-        console.log(`Moving piece '${this.position[move[0]]}' from ${move[0]} to ${move[1]}: (promotion piece: ${promotionPiece})`);
-        // TODO: Make the special case for promoting...
-        
+        this.log(`Moving piece '${this.position[move[0]]}' from ${move[0]} to ${move[1]}: (promotion piece: ${promotionPiece})`);
+        let stateBefore = this.clone();
+        this.gameHistoryStack.push(stateBefore);
+        this.log(`state before:`, stateBefore);
+
         if (this.position[move[0]] === undefined){
-            console.log("Invalid move: (source empty) ", move, this.position);
+            this.log("Invalid move: (source empty) ", move, this.position);
             return false;
         }
 
@@ -110,7 +136,7 @@ class DiceChessState {
         // delete the captured pawn (special case)
         let isPawnMove = this.position[move[0]][1] == 'P'
         let direction = (rank(move[0]) < rank(move[1])) ? 1 : -1;
-        if (isPawnMove && move[1] == this.enPassant){
+        if (isPawnMove && (move[1] == this.enPassant)){
             let squareToDelete = `${file(move[1])}${rank(move[1]) - direction}`;
             delete this.position[squareToDelete];
         }
@@ -124,7 +150,8 @@ class DiceChessState {
 
         // This is so that it actually updates when later doing
         // board.position(state.position)
-        this.position = JSON.parse(JSON.stringify(this.position))
+        // It seems without it, chessboardjs thinks the position hasn't changed.
+        this.position = JSON.parse(JSON.stringify(this.position));
 
         // Updating castling eligibility
         if (isKingMove){
@@ -134,33 +161,31 @@ class DiceChessState {
             for (let file of ['a','h']){
                 let color = rank == 1 ? 'W' : 'B';
                 let moveStartsOnRookHome = (move[0] == `${file}${rank}`);
-                if (moveStartsOnRookHome){
+                if (moveStartsOnRookHome)
                     this.castleEligibility[`${color}R${file}`] = false;
-                }
             }
         }
         
-
         let [from, to] = move;
         this.position[to] = this.position[from];
         delete this.position[from];
 
         // If it's a pawn move, check for promotion and update piece type
-        if (isPawnMove && rank(move[1]) == 1 || rank(move[1]) == 8){
+        if (isPawnMove && rank(move[1]) == 1 || rank(move[1]) == 8)
             this.position[to] = promotionPiece;
-        }
 
-
-        if (this.anotherTurn){
+        if (this.anotherTurn)
             this.anotherTurn = false;
-        }
-        else{
+        else
             this.whoseTurn = (this.whoseTurn == "White") ? "Black" : "White";
-        }
-
         
+        this.log("state after: ", this.clone());
 
-
+        if (!this.simulated){
+            document.querySelector("#proposeTakeback").disabled = false;
+            document.querySelector("#acceptTakeback").disabled = true;
+            document.querySelector("#rejectTakeback").disabled = true;
+        }
     }
 
 
@@ -184,7 +209,14 @@ class DiceChessState {
                 let [newFile, newRank] = [file(newSpot), rank(newSpot)];
                 let withinBoard = (newFile >= 'a' && newFile <= 'h' && newRank >= 1 && newRank <= 8);
                 let targetEmpty = (this.position[newSpot] === undefined);
-                let targetEnemy = (!targetEmpty && this.position[newSpot][0].toLowerCase() != this.whoseTurn[0].toLowerCase());
+
+                let targetEnemy;
+                try{
+                    targetEnemy = (!targetEmpty && this.position[newSpot][0].toLowerCase() != this.whoseTurn[0].toLowerCase());
+                }
+                catch{
+                    this.log("weirdness: ", newSpot, targetEmpty, targetEnemy, this.position);
+                }
 
                 if (withinBoard && (targetEmpty || targetEnemy)){
                     moves.push([spot, newSpot]);
@@ -259,6 +291,7 @@ class DiceChessState {
 
     squareIsAttacked(spot){
         let clone = this.clone();
+        clone.simulated = true;
         clone.whoseTurn = (this.whoseTurn == "White") ? "Black" : "White";
         let moves = clone.prelimMoves();
         for (let move of moves){
@@ -278,7 +311,7 @@ class DiceChessState {
         let kings = this.getPieces('K');
         let king = kings[0]; // We can assume you have exactly one king
 
-        // A hack needed for putsMeInCheck
+        // A hack needed for putsMeInCheck (why?...)
         if (king === undefined){
             return [];
         }
@@ -366,16 +399,13 @@ class DiceChessState {
 
 
     putsMeInCheck(move){
-        let kingSpot = this.getPieces('K')[0];
         let newBoard = this.clone();
+        newBoard.simulated = true;
         
         newBoard.anotherTurn = false;
-        // console.log("New board before move", move, JSON.stringify(newBoard.position), newBoard.whoseTurn, newBoard.anotherTurn);
         newBoard.makeMove(move);
-        // console.log("New board", JSON.stringify(newBoard.position), newBoard.whoseTurn, newBoard.anotherTurn);
 
         newBoard.whoseTurn = (newBoard.whoseTurn == "White") ? "Black" : "White";
-
         return newBoard.check();
     }
 
