@@ -120,6 +120,7 @@ class DiceChessState {
         let isKingMove = this.position[move[0]][1] == 'K';
         let kingRankDist = xDistSigned(move[0], move[1]);
         if (isKingMove && Math.abs(kingRankDist) == 2){
+            this.log("Castling: ", move, this.position);
             let r = rank(move[0]);
             if (kingRankDist > 0){ // Kingside castle
                 // Move Kingside rook to f file
@@ -171,7 +172,7 @@ class DiceChessState {
         delete this.position[from];
 
         // If it's a pawn move, check for promotion and update piece type
-        if (isPawnMove && rank(move[1]) == 1 || rank(move[1]) == 8)
+        if (isPawnMove && (rank(move[1]) == 1 || rank(move[1]) == 8))
             this.position[to] = promotionPiece;
 
         if (this.anotherTurn)
