@@ -23,6 +23,10 @@ h2,h4 {
     margin:10px;
 }
 
+.piece-417db {
+    position: relative;
+    bottom: 5px;
+}
 
 #controls{
     position:absolute;
