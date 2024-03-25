@@ -27,9 +27,9 @@
     <main>
       <div id="controls">
         <div>
-          <button id="proposeTakeback" disabled onclick="proposeTakeback()">Propose Takeback</button>
-          <button id="acceptTakeback" disabled onclick="acceptTakeback()">Accept Takeback</button>
-          <button id="rejectTakeback" disabled onclick="rejectTakeback()">Reject Takeback</button>
+          <button id="proposeTakeback" disabled onclick="proposeTakeback()">Propose <br>Takeback</button>
+          <button id="acceptTakeback" disabled onclick="acceptTakeback()">Accept <br>Takeback</button>
+          <button id="rejectTakeback" disabled onclick="rejectTakeback()">Reject <br>Takeback</button>
         </div>
       </div>
       <div id="chessBoard"></div>
@@ -152,7 +152,7 @@
 
         function gameEndChecker(){
           if (state.checkmate()){
-              document.querySelector("#toMove").innerHTML = `Game Over: ${this.whoseTurn == "White" ? "Black" : "White"} wins!`;
+              document.querySelector("#toMove").innerHTML = `Game Over: ${state.whoseTurn == "White" ? "Black" : "White"} wins!`;
           }
           else if (state.stalemate()){
               document.querySelector("#toMove").innerHTML = `Game Over: Stalemate!`;
