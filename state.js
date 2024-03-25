@@ -88,7 +88,7 @@ class DiceChessState {
 
     updateToMove(){
         const required = requiredRoll(false);
-        let nMoves = this.anotherTurn ? `First of two moves! (A ${required} was rolled!)` :
+        let nMoves = this.anotherTurn ? `First of two moves! (${required} was rolled!)` :
                             (this.isSecondTurn ? `Second of two moves.` : `1 move only (didn't roll a ${required})`);
         document.querySelector('#toMove').innerHTML = `${this.whoseTurn} to move <br>${nMoves}`;
     }
