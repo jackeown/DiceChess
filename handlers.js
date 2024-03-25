@@ -34,25 +34,11 @@ function onDrop (source, target, piece, newPos, oldPos, orientation) {
         return false;
     }
 
-    let chessBoard = document.getElementById("chessBoard");
-    
-    // Switch whose turn it is if the person is doing their second move or if the opponent only has one move.
-    if (chessBoard.classList.contains("active")){
-        updateToMove(board.orientation() == 'white' ? 'black' : 'white');
-    }
-    // otherwise they are doing their first move and we don't need to switch.
-    else{
-        updateToMove(board.orientation());
-    }
-
     boardStatus("active");
     window.position = newPos;
     state.makeMove([source,target], promotionPiece);
-    // board.position(state.position); // needed for promotions
     setTimeout(() => board.position(state.position), 10);
 
-
-    // sendPosition(window.conn, newPos);
     sendMove(window.conn, [source, target], promotionPiece);
     window.enPassant = null;
 }
@@ -60,21 +46,6 @@ function onDrop (source, target, piece, newPos, oldPos, orientation) {
 
 
 
-
-
-
-
-function updateToMove(player, roll, required){
-    // window.whoseMove = player;
-    // state.whoseTurn = player;
-
-    if (roll === undefined || required === undefined){
-        document.getElementById('toMove').innerHTML = `${player}'s turn to move`;
-    }
-    else{
-        document.getElementById('toMove').innerHTML = `${player} needed a ${required} and rolled a ${roll}. ${player}'s turn to move`;
-    }
-}
 
 function checkConnectCode(){
     // enable/disable connect button if username/opponentConnect is nonempty/empty.
@@ -88,8 +59,17 @@ function checkConnectCode(){
 }
 
 function copyGameLink(){
-        navigator.clipboard.writeText(`https://jackeown.github.io/DiceChess/#${peer.id}`);
+        const l = window.location;
+        navigator.clipboard.writeText(`${l.protocol}//${l.host}${l.pathname}?theirId=${peer.id}`);
 }
+
+function updateURL(myId, theirId){
+    const l = window.location;
+    window.history.replaceState(null, null, `${l.protocol}//${l.host}${l.pathname}?theirId=${theirId}&myId=${myId}`);
+}
+
+
+
 
 
 function boardStatus(status){
@@ -151,7 +131,6 @@ function processRoll(roll, opponentsTurn){
     let opponentColor = board.orientation() == 'white' ? 'black' : 'white';
     let color = opponentsTurn ? opponentColor : board.orientation();
     
-    updateToMove(color, roll, requiredRoll(opponentsTurn));
     if (requiredRoll(opponentsTurn) == roll){
         state.anotherTurn = true;
         if (opponentsTurn){
@@ -161,22 +140,24 @@ function processRoll(roll, opponentsTurn){
             boardStatus("good");
         }
     }
+    else{
+        state.anotherTurn = false;
+        boardStatus("active");
+    }
+    state.updateToMove();
 }
 
 function rollDice(){
     // Roll 2 dice and send the result to the opponent.
     let roll = Math.floor(Math.random() * 6) + 1;
     let roll2 = Math.floor(Math.random() * 6) + 1;
-
-    // let roll = Math.floor(Math.random() * 6)+1;
-    // let roll2 = requiredRoll(false) - roll;
+    console.log(`Rolled ${roll} and ${roll2}`);
 
     window.conn.send({
         type: 'roll',
         value: [roll,roll2]
     });
 
-    // rollDiceGUI(roll,roll2);
     processRoll([roll,roll2], 0);
 }
 
@@ -184,17 +165,12 @@ function rollDice(){
 function initializeOrientation(){
     if (peer.id < window.conn.peer){
         board.orientation('white');
+        rollDice();
     }
     else{
         board.orientation('black');
     }
 }
-
-
-
-
-
-
 
 
 
@@ -210,12 +186,10 @@ function recvData(data){
         board.position(state.position);
         if (chessBoard.classList.contains("active")) {
             boardStatus("active");
-            updateToMove(board.orientation() == 'white' ? 'black' : 'white');
             rollDice();
         }
         else if (chessBoard.classList.contains("bad")) {
             boardStatus("active");
-            updateToMove(board.orientation() == 'white' ? 'black' : 'white');
         }
     }
     else if(data.type == 'roll'){
@@ -245,11 +219,13 @@ function processConnection(conn){
         conn.on('data', recvData);
     }
     console.log('Connected to', window.conn.peer);
-    updateToMove('white');
+    updateURL(peer.id, window.conn.peer);
+
     document.getElementById('opponentCode').value = window.conn.peer;
     document.getElementById('connect').disabled = true;
-    initializeOrientation();
-    document.getElementById('chessBoard').classList.add("active")
+    document.getElementById('chessBoard').classList.add("active");
+
+    setTimeout(initializeOrientation, 1000);
 }
 
 
@@ -265,26 +241,6 @@ function connectToPeer(id){
     window.conn = conn;
     return conn;
 }
-
-
-
-document.body.onload = function () {
-    window.peer = new Peer();
-
-    peer.on('connection', processConnection);
-
-    // Set Connect code in the DOM.
-    setTimeout(function(){
-        document.getElementById('connectCode').innerHTML = peer.id;
-    },2000);
-
-    setTimeout(function(){
-        // If there's a hash in the url, use it to connect to the peer.
-        if (window.location.hash.length > 1){
-            connectToPeer(window.location.hash.slice(1));
-        }
-    }, 4000);
-};
 
 
 function proposeTakeback(){
@@ -310,3 +266,37 @@ function rejectTakeback(){
     document.querySelector('#acceptTakeback').disabled = false;
     document.querySelector('#rejectTakeback').disabled = false;
 }
+
+
+
+
+
+
+
+document.body.onload = function () {
+
+    const urlStuff = new URL(window.location.href);
+    const params = new URLSearchParams(urlStuff.search);
+    let myId = params.get('myId');
+    window.peer = new Peer(myId);
+    
+    peer.on('connection', processConnection);
+    
+    // Set Connect code in the DOM.
+    setTimeout(function(){
+        document.getElementById('connectCode').innerHTML = peer.id;
+        localStorage.setItem("peerId", peer.id);
+    },2000);
+
+    setTimeout(function(){
+
+        const url = new URL(window.location.href);
+        const params = new URLSearchParams(url.search);
+        const theirId = params.get('theirId');
+
+        // If there's a hash in the url, use it to connect to the peer.
+        if (theirId != null){
+            connectToPeer(theirId);
+        }
+    }, 4000);
+};

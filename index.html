@@ -152,18 +152,14 @@
 
         function gameEndChecker(){
           if (state.checkmate()){
-              alert(`Game Over: ${this.whoseTurn == "White" ? "Black" : "White"} wins!`);
+              document.querySelector("#toMove").innerHTML = `Game Over: ${this.whoseTurn == "White" ? "Black" : "White"} wins!`;
           }
           else if (state.stalemate()){
-              alert(`Game Over: Stalemate!`);
+              document.querySelector("#toMove").innerHTML = `Game Over: Stalemate!`;
           }
-          else{
-              setTimeout(gameEndChecker, 1000);
-              // console.log('Game not over yet');
-          }
+          setTimeout(gameEndChecker, 1000);
         }
         gameEndChecker()
-
 
 
 

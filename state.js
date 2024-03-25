@@ -28,6 +28,7 @@ class DiceChessState {
         this.position = null;
         this.whoseTurn = null;
         this.anotherTurn = false;
+        this.isSecondTurn = false;
         this.enPassant = null;
         this.castleEligibility = null;
         this.simulated = false;
@@ -46,6 +47,7 @@ class DiceChessState {
         newState.position = JSON.parse(JSON.stringify(this.position)); // deep copy this.position;
         newState.whoseTurn = this.whoseTurn;
         newState.anotherTurn = this.anotherTurn;
+        newState.isSecondTurn = this.isSecondTurn;
         newState.enPassant = this.enPassant;
         newState.castleEligibility = JSON.parse(JSON.stringify(this.castleEligibility)); // deep copy this.castleEligibility;
         newState.simulated = this.simulated;
@@ -58,6 +60,7 @@ class DiceChessState {
         this.position = board.position();
         this.whoseTurn = 'White';
         this.anotherTurn = false;
+        this.isSecondTurn = false;
         this.enPassant = null;
         this.castleEligibility = {
             'WK': true,
@@ -81,6 +84,14 @@ class DiceChessState {
         document.querySelector('#acceptTakeback').disabled = true;
         document.querySelector('#rejectTakeback').disabled = true;
     }
+    
+
+    updateToMove(){
+        const required = requiredRoll(false);
+        let nMoves = this.anotherTurn ? `First of two moves! (A ${required} was rolled!)` :
+                            (this.isSecondTurn ? `Second of two moves.` : `1 move only (didn't roll a ${required})`);
+        document.querySelector('#toMove').innerHTML = `${this.whoseTurn} to move <br>${nMoves}`;
+    }
 
     check(){
         // If it were the other player's turn, could they capture your king?
@@ -89,7 +100,9 @@ class DiceChessState {
     }
 
     checkmate(){
-        return this.legalMoves().length == 0 && this.check();
+        const standardMate = this.legalMoves().length == 0 && this.check();
+        const kingCapture = this.getPieces('K').length == 0;
+        return standardMate || kingCapture;
     }
 
     stalemate(){
@@ -175,10 +188,14 @@ class DiceChessState {
         if (isPawnMove && (rank(move[1]) == 1 || rank(move[1]) == 8))
             this.position[to] = promotionPiece;
 
-        if (this.anotherTurn)
+        if (this.anotherTurn){
             this.anotherTurn = false;
-        else
+            this.isSecondTurn = true;
+        }
+        else{
             this.whoseTurn = (this.whoseTurn == "White") ? "Black" : "White";
+            this.isSecondTurn = false;
+        }
         
         this.log("state after: ", this.clone());
 
@@ -186,6 +203,7 @@ class DiceChessState {
             document.querySelector("#proposeTakeback").disabled = false;
             document.querySelector("#acceptTakeback").disabled = true;
             document.querySelector("#rejectTakeback").disabled = true;
+            this.updateToMove();
         }
     }
 
