@@ -5,12 +5,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dice Chess</title>
-    <link rel="stylesheet" href="css/style.css">
-
     <link rel="stylesheet"
     href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css"
     integrity="sha384-q94+BZtLrkL1/ohfjR8c6L+A6qzNH9R2hBLwyoAfu3i/WCvQjzL2RQJ3uNHDISdU"
     crossorigin="anonymous">
+    
+    <link rel="stylesheet" href="css/style.css">
+
+
 </head>
 <body>
     <header>
@@ -33,85 +35,85 @@
         </div>
       </div>
       <div id="chessBoard"></div>
+      <h3 id="toMove">(You must connect with an opponent first)</h3>
+      <div class="dice">
+          <ol class="die-list even-roll" data-roll="1" id="die-1">
+  
+              <!-- First Die -->
+              <li class="die-item" data-side="1">
+                <span class="dot"></span>
+              </li>
+              <li class="die-item" data-side="2">
+                <span class="dot"></span>
+                <span class="dot"></span>
+              </li>
+              <li class="die-item" data-side="3">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+              </li>
+              <li class="die-item" data-side="4">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+              </li>
+              <li class="die-item" data-side="5">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+              </li>
+              <li class="die-item" data-side="6">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+              </li>
+            </ol>
+  
+            <!-- Second Die -->
+            <ol class="die-list even-roll" data-roll="1" id="die-1">
+              <li class="die-item" data-side="1">
+                <span class="dot"></span>
+              </li>
+              <li class="die-item" data-side="2">
+                <span class="dot"></span>
+                <span class="dot"></span>
+              </li>
+              <li class="die-item" data-side="3">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+              </li>
+              <li class="die-item" data-side="4">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+              </li>
+              <li class="die-item" data-side="5">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+              </li>
+              <li class="die-item" data-side="6">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+              </li>
+            </ol>
+      </div>
     </main>
 
-    <h3 id="toMove">(You must connect with an opponent first)</h3>
-    <div class="dice">
-        <ol class="die-list even-roll" data-roll="1" id="die-1">
-
-            <!-- First Die -->
-            <li class="die-item" data-side="1">
-              <span class="dot"></span>
-            </li>
-            <li class="die-item" data-side="2">
-              <span class="dot"></span>
-              <span class="dot"></span>
-            </li>
-            <li class="die-item" data-side="3">
-              <span class="dot"></span>
-              <span class="dot"></span>
-              <span class="dot"></span>
-            </li>
-            <li class="die-item" data-side="4">
-              <span class="dot"></span>
-              <span class="dot"></span>
-              <span class="dot"></span>
-              <span class="dot"></span>
-            </li>
-            <li class="die-item" data-side="5">
-              <span class="dot"></span>
-              <span class="dot"></span>
-              <span class="dot"></span>
-              <span class="dot"></span>
-              <span class="dot"></span>
-            </li>
-            <li class="die-item" data-side="6">
-              <span class="dot"></span>
-              <span class="dot"></span>
-              <span class="dot"></span>
-              <span class="dot"></span>
-              <span class="dot"></span>
-              <span class="dot"></span>
-            </li>
-          </ol>
-
-          <!-- Second Die -->
-          <ol class="die-list even-roll" data-roll="1" id="die-1">
-            <li class="die-item" data-side="1">
-              <span class="dot"></span>
-            </li>
-            <li class="die-item" data-side="2">
-              <span class="dot"></span>
-              <span class="dot"></span>
-            </li>
-            <li class="die-item" data-side="3">
-              <span class="dot"></span>
-              <span class="dot"></span>
-              <span class="dot"></span>
-            </li>
-            <li class="die-item" data-side="4">
-              <span class="dot"></span>
-              <span class="dot"></span>
-              <span class="dot"></span>
-              <span class="dot"></span>
-            </li>
-            <li class="die-item" data-side="5">
-              <span class="dot"></span>
-              <span class="dot"></span>
-              <span class="dot"></span>
-              <span class="dot"></span>
-              <span class="dot"></span>
-            </li>
-            <li class="die-item" data-side="6">
-              <span class="dot"></span>
-              <span class="dot"></span>
-              <span class="dot"></span>
-              <span class="dot"></span>
-              <span class="dot"></span>
-              <span class="dot"></span>
-            </li>
-          </ol>
-    </div>
 
 
     <!-- Jquery, Chessboard, and PeerJS imports -->
